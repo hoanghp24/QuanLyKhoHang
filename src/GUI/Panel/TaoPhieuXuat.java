@@ -346,6 +346,8 @@ public final class TaoPhieuXuat extends JPanel {
                 int soLuongTon = Integer.parseInt(txtSoluongTon.getText());
                 if (soLuongMua > soLuongTon) {
                     JOptionPane.showMessageDialog(null, "Số lượng mua không được lớn hơn số lượng tồn");
+                } else if (soLuongMua <= 0){
+                    JOptionPane.showMessageDialog(null, "Số lượng mua phải lớn hơn 0");
                 } else {
                     getInfo();
                     Notification notification = new Notification(mainChinh, Notification.Type.SUCCESS, Notification.Location.TOP_CENTER, "Thêm sản phẩm thành công!");
