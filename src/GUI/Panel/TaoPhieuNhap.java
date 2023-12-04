@@ -439,7 +439,7 @@ public final class TaoPhieuNhap extends JPanel {
         JPanel right_top, right_center, right_bottom, pn_tongtien;
         right_top = new JPanel(new GridLayout(2, 1, 0, 0));
         right_top.setPreferredSize(new Dimension(300, 180));
-        txtMaphieu = new InputForm("Mã phiếu nhập");
+        txtMaphieu = new InputForm("Mã đơn nhập");
         txtMaphieu.setEditable(false);
         txtNhanVien = new InputForm("Nhân viên nhập");
         txtNhanVien.setEditable(false);
@@ -692,6 +692,6 @@ public final class TaoPhieuNhap extends JPanel {
         this.cbxPhienBan.setArr(arr);
         this.txtGiaNhap.setText("");
         this.txtSoluongTon.setText("");
-        this.textAreaIsbn.setText("");
+        this.txtSoLuongNhap.setText("");
     }
 }

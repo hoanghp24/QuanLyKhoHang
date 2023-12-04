@@ -259,7 +259,7 @@ public class writePDF {
     public void writePX(int maphieu) {
         String url = "";
         try {
-            fd.setTitle("In phiếu xuất");
+            fd.setTitle("In đơn hàng");
             fd.setLocationRelativeTo(null);
             url = getFile("phieu_xuat_" + maphieu);
             if (url.equals("nullnull")) {

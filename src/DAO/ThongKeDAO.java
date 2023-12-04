@@ -4,9 +4,11 @@
  */
 package DAO;
 
+import DTO.ThongKe.ThongKeBanHangDTO;
 import DTO.ThongKe.ThongKeDoanhThuDTO;
 import DTO.ThongKe.ThongKeKhachHangDTO;
 import DTO.ThongKe.ThongKeNhaPhatHanhDTO;
+import DTO.ThongKe.ThongKeNhapHangDTO;
 import DTO.ThongKe.ThongKeTheoThangDTO;
 import DTO.ThongKe.ThongKeTonKhoDTO;
 import DTO.ThongKe.ThongKeTungNgayTrongThangDTO;
@@ -24,10 +26,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Tran Nhat Sinh
- */
+
 public class ThongKeDAO {
 
     public static ThongKeDAO getInstance() {
@@ -217,7 +216,7 @@ public class ThongKeDAO {
         return result;
     }
 
-    public static ArrayList<ThongKeNhaPhatHanhDTO> getThongKeNCC(String text, Date timeStart, Date timeEnd) {
+    public static ArrayList<ThongKeNhaPhatHanhDTO> getThongKeNPH(String text, Date timeStart, Date timeEnd) {
         ArrayList<ThongKeNhaPhatHanhDTO> result = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timeEnd.getTime());
@@ -340,71 +339,53 @@ public class ThongKeDAO {
         return result;
     }
 
-    public ArrayList<ThongKeTungNgayTrongThangDTO> getThongKeTungNgayTrongThang(int thang, int nam) {
-        ArrayList<ThongKeTungNgayTrongThangDTO> result = new ArrayList<>();
+    public static ArrayList<ThongKeNhapHangDTO> getThongKeNhapHang(String text, Date timeStart, Date timeEnd) {
+        ArrayList<ThongKeNhapHangDTO> result = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeEnd.getTime());
+        // Đặt giá trị cho giờ, phút, giây và mili giây của Calendar
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         try {
             Connection con = JDBCUtil.getConnection();
-            String ngayString = nam + "-" + thang + "-" + "01";
-            String sql = "WITH RECURSIVE dates(date) AS (\n"
-                    + "  SELECT DATE(?) + INTERVAL c.number DAY AS date\n"
-                    + "  FROM (\n"
-                    + "    SELECT 0 AS number\n"
-                    + "    UNION ALL SELECT 1\n"
-                    + "    UNION ALL SELECT 2\n"
-                    + "    UNION ALL SELECT 3\n"
-                    + "    UNION ALL SELECT 4\n"
-                    + "    UNION ALL SELECT 5\n"
-                    + "    UNION ALL SELECT 6\n"
-                    + "    UNION ALL SELECT 7\n"
-                    + "    UNION ALL SELECT 8\n"
-                    + "    UNION ALL SELECT 9\n"
-                    + "    UNION ALL SELECT 10\n"
-                    + "    UNION ALL SELECT 11\n"
-                    + "    UNION ALL SELECT 12\n"
-                    + "    UNION ALL SELECT 13\n"
-                    + "    UNION ALL SELECT 14\n"
-                    + "    UNION ALL SELECT 15\n"
-                    + "    UNION ALL SELECT 16\n"
-                    + "    UNION ALL SELECT 17\n"
-                    + "    UNION ALL SELECT 18\n"
-                    + "    UNION ALL SELECT 19\n"
-                    + "    UNION ALL SELECT 20\n"
-                    + "    UNION ALL SELECT 21\n"
-                    + "    UNION ALL SELECT 22\n"
-                    + "    UNION ALL SELECT 23\n"
-                    + "    UNION ALL SELECT 24\n"
-                    + "    UNION ALL SELECT 25\n"
-                    + "    UNION ALL SELECT 26\n"
-                    + "    UNION ALL SELECT 27\n"
-                    + "    UNION ALL SELECT 28\n"
-                    + "    UNION ALL SELECT 29\n"
-                    + "    UNION ALL SELECT 30\n"
-                    + "  ) AS c\n"
-                    + "  WHERE DATE(?) + INTERVAL c.number DAY <= LAST_DAY(?)\n"
-                    + ")\n"
-                    + "SELECT \n"
-                    + "  dates.date AS ngay, \n"
-                    + "  COALESCE(SUM(DISTINCT phieunhap.tongtien), 0) AS chiphi, \n"
-                    + "  COALESCE(SUM(DISTINCT phieuxuat.tongtien), 0) AS doanhthu\n"
-                    + "FROM dates\n"
-                    + "LEFT JOIN phieunhap ON DATE(phieunhap.thoigian) = dates.date\n"
-                    + "LEFT JOIN phieuxuat ON DATE(phieuxuat.thoigian) = dates.date\n"
-                    + "GROUP BY dates.date\n"
-                    + "ORDER BY dates.date;";
-
+            String sql = """
+                        WITH pn AS (
+                            SELECT
+                                phieunhap.maphieunhap,
+                                phieunhap.nguoitao,
+                                phieunhap.thoigian,
+                                COUNT(phieunhap.maphieunhap) AS tongsophieu,
+                                SUM(phieunhap.tongtien) AS tongsotien
+                            FROM phieunhap
+                            WHERE phieunhap.thoigian BETWEEN ? AND ? 
+                            GROUP BY phieunhap.maphieunhap, phieunhap.nguoitao
+                        )
+                        SELECT
+                            maphieunhap,
+                            nguoitao,
+                            thoigian,
+                            COALESCE(SUM(pn.tongsophieu) OVER (), 0) AS soluong,
+                            COALESCE(pn.tongsotien, 0) AS subtotal,
+                            COALESCE(SUM(pn.tongsotien) OVER (), 0) AS total_amount
+                        FROM pn WHERE nguoitao LIKE ? OR maphieunhap LIKE ?""";
             PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, ngayString);
-            pst.setString(2, ngayString);
-            pst.setString(3, ngayString);
+            pst.setTimestamp(1, new Timestamp(timeStart.getTime()));
+            pst.setTimestamp(2, new Timestamp(calendar.getTimeInMillis()));
+            pst.setString(3, "%" + text + "%");
+            pst.setString(4, "%" + text + "%");
 
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                Date ngay = rs.getDate("ngay");
-                int chiphi = rs.getInt("chiphi");
-                int doanhthu = rs.getInt("doanhthu");
-                int loinhuan = doanhthu - chiphi;
-                ThongKeTungNgayTrongThangDTO tn = new ThongKeTungNgayTrongThangDTO(ngay, chiphi, doanhthu, loinhuan);
-                result.add(tn);
+                int maphieunhap = rs.getInt("maphieunhap");
+                int nguoitao = rs.getInt("nguoitao");
+                String thoigian = rs.getString("thoigian");
+                int soluong = rs.getInt("soluong");
+                long tongtien = rs.getInt("total_amount");
+                long tongsotien = rs.getInt("subtotal");
+                ThongKeNhapHangDTO x = new ThongKeNhapHangDTO(maphieunhap, nguoitao, thoigian, soluong, tongtien, tongsotien);
+                result.add(x);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -412,85 +393,53 @@ public class ThongKeDAO {
         return result;
     }
 
-    public ArrayList<ThongKeTungNgayTrongThangDTO> getThongKeTuNgayDenNgay(String star, String end) {
-        ArrayList<ThongKeTungNgayTrongThangDTO> result = new ArrayList<>();
+    public static ArrayList<ThongKeBanHangDTO> getThongKeBanHang(String text, Date timeStart, Date timeEnd) {
+        ArrayList<ThongKeBanHangDTO> result = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeEnd.getTime());
+        // Đặt giá trị cho giờ, phút, giây và mili giây của Calendar
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         try {
             Connection con = JDBCUtil.getConnection();
-            String sqlSelect = "SELECT \n"
-                    + "  dates.date AS ngay, \n"
-                    + "  COALESCE(SUM(DISTINCT phieunhap.tongtien), 0) AS chiphi, \n"
-                    + "  COALESCE(SUM(DISTINCT phieuxuat.tongtien), 0) AS doanhthu\n"
-                    + "FROM (\n"
-                    + "  SELECT DATE_ADD(?, INTERVAL c.number DAY) AS date\n"
-                    + "  FROM (\n"
-                    + "    SELECT a.number + b.number * 31 AS number\n"
-                    + "    FROM (\n"
-                    + "      SELECT 0 AS number\n"
-                    + "      UNION ALL SELECT 1\n"
-                    + "      UNION ALL SELECT 2\n"
-                    + "      UNION ALL SELECT 3\n"
-                    + "      UNION ALL SELECT 4\n"
-                    + "      UNION ALL SELECT 5\n"
-                    + "      UNION ALL SELECT 6\n"
-                    + "      UNION ALL SELECT 7\n"
-                    + "      UNION ALL SELECT 8\n"
-                    + "      UNION ALL SELECT 9\n"
-                    + "      UNION ALL SELECT 10\n"
-                    + "      UNION ALL SELECT 11\n"
-                    + "      UNION ALL SELECT 12\n"
-                    + "      UNION ALL SELECT 13\n"
-                    + "      UNION ALL SELECT 14\n"
-                    + "      UNION ALL SELECT 15\n"
-                    + "      UNION ALL SELECT 16\n"
-                    + "      UNION ALL SELECT 17\n"
-                    + "      UNION ALL SELECT 18\n"
-                    + "      UNION ALL SELECT 19\n"
-                    + "      UNION ALL SELECT 20\n"
-                    + "      UNION ALL SELECT 21\n"
-                    + "      UNION ALL SELECT 22\n"
-                    + "      UNION ALL SELECT 23\n"
-                    + "      UNION ALL SELECT 24\n"
-                    + "      UNION ALL SELECT 25\n"
-                    + "      UNION ALL SELECT 26\n"
-                    + "      UNION ALL SELECT 27\n"
-                    + "      UNION ALL SELECT 28\n"
-                    + "      UNION ALL SELECT 29\n"
-                    + "      UNION ALL SELECT 30\n"
-                    + "    ) AS a\n"
-                    + "    CROSS JOIN (\n"
-                    + "      SELECT 0 AS number\n"
-                    + "      UNION ALL SELECT 1\n"
-                    + "      UNION ALL SELECT 2\n"
-                    + "      UNION ALL SELECT 3\n"
-                    + "      UNION ALL SELECT 4\n"
-                    + "      UNION ALL SELECT 5\n"
-                    + "      UNION ALL SELECT 6\n"
-                    + "      UNION ALL SELECT 7\n"
-                    + "      UNION ALL SELECT 8\n"
-                    + "      UNION ALL SELECT 9\n"
-                    + "      UNION ALL SELECT 10\n"
-                    + "    ) AS b\n"
-                    + "  ) AS c\n"
-                    + "  WHERE DATE_ADD(?, INTERVAL c.number DAY) <= ?\n"
-                    + ") AS dates\n"
-                    + "LEFT JOIN phieuxuat ON DATE(phieuxuat.thoigian) = dates.date\n"
-                    + "LEFT JOIN phieunhap ON DATE(phieunhap.thoigian) = dates.date\n"
-                    + "GROUP BY dates.date\n"
-                    + "ORDER BY dates.date;";
-    
-            PreparedStatement pstSelect = con.prepareStatement(sqlSelect);
-            pstSelect.setString(1, star);
-            pstSelect.setString(2, star);
-            pstSelect.setString(3, end);
-    
-            ResultSet rs = pstSelect.executeQuery();
+            String sql = """
+                        WITH pn AS (
+                            SELECT
+                                phieuxuat.maphieuxuat,
+                                phieuxuat.nguoitao,
+                                phieuxuat.thoigian,
+                                COUNT(phieuxuat.maphieuxuat) AS tongsophieu,
+                                SUM(phieuxuat.tongtien) AS tongsotien
+                            FROM phieuxuat
+                            WHERE phieuxuat.thoigian BETWEEN ? AND ? 
+                            GROUP BY phieuxuat.maphieuxuat, phieuxuat.nguoitao
+                        )
+                        SELECT
+                            maphieuxuat,
+                            nguoitao,
+                            thoigian,
+                            COALESCE(SUM(pn.tongsophieu) OVER (), 0) AS soluong,
+                            COALESCE(pn.tongsotien, 0) AS subtotal,
+                            COALESCE(SUM(pn.tongsotien) OVER (), 0) AS total_amount
+                        FROM pn WHERE nguoitao LIKE ? OR maphieuxuat LIKE ?""";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setTimestamp(1, new Timestamp(timeStart.getTime()));
+            pst.setTimestamp(2, new Timestamp(calendar.getTimeInMillis()));
+            pst.setString(3, "%" + text + "%");
+            pst.setString(4, "%" + text + "%");
+
+            ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                Date ngay = rs.getDate("ngay");
-                int chiphi = rs.getInt("chiphi");
-                int doanhthu = rs.getInt("doanhthu");
-                int loinhuan = doanhthu - chiphi;
-                ThongKeTungNgayTrongThangDTO tn = new ThongKeTungNgayTrongThangDTO(ngay, chiphi, doanhthu, loinhuan);
-                result.add(tn);
+                int maphieuxuat = rs.getInt("maphieuxuat");
+                int nguoitao = rs.getInt("nguoitao");
+                String thoigian = rs.getString("thoigian");
+                int soluong = rs.getInt("soluong");
+                long tongtien = rs.getInt("total_amount");
+                long tongsotien = rs.getInt("subtotal");
+                ThongKeBanHangDTO x = new ThongKeBanHangDTO(maphieuxuat, nguoitao, thoigian, soluong, tongtien, tongsotien);
+                result.add(x);
             }
         } catch (SQLException e) {
             e.printStackTrace();

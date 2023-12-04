@@ -1,9 +1,11 @@
 package BUS;
 
 import DAO.ThongKeDAO;
+import DTO.ThongKe.ThongKeBanHangDTO;
 import DTO.ThongKe.ThongKeDoanhThuDTO;
 import DTO.ThongKe.ThongKeKhachHangDTO;
 import DTO.ThongKe.ThongKeNhaPhatHanhDTO;
+import DTO.ThongKe.ThongKeNhapHangDTO;
 import DTO.ThongKe.ThongKeTheoThangDTO;
 import DTO.ThongKe.ThongKeTonKhoDTO;
 import DTO.ThongKe.ThongKeTungNgayTrongThangDTO;
@@ -15,8 +17,12 @@ import java.util.HashMap;
 public class ThongKeBUS {
 
     ThongKeDAO thongkeDAO = new ThongKeDAO();
-    ArrayList<ThongKeKhachHangDTO> tkkh;
-    ArrayList<ThongKeNhaPhatHanhDTO> tkncc;
+    ArrayList<ThongKeKhachHangDTO> tkkh;    
+    ArrayList<ThongKeNhapHangDTO> tknh;
+    ArrayList<ThongKeBanHangDTO> tkbh;
+
+
+    ArrayList<ThongKeNhaPhatHanhDTO> tknph;
     HashMap<Integer, ArrayList<ThongKeTonKhoDTO>> listTonKho;
 
     public ThongKeBUS() {
@@ -32,14 +38,15 @@ public class ThongKeBUS {
         this.tkkh = ThongKeDAO.getThongKeKhachHang(text,start, end);
         return this.tkkh;
     }
-        public ArrayList<ThongKeNhaPhatHanhDTO> getAllNCC() {
-        this.tkncc=ThongKeDAO.getThongKeNCC("",new Date(0), new Date(System.currentTimeMillis()));
-        return this.tkncc;
+
+    public ArrayList<ThongKeNhaPhatHanhDTO> getAllNPH() {
+        this.tknph=ThongKeDAO.getThongKeNPH("",new Date(0), new Date(System.currentTimeMillis()));
+        return this.tknph;
     }
 
-    public ArrayList<ThongKeNhaPhatHanhDTO> FilterNCC(String text,Date start, Date end) {
-        this.tkncc = ThongKeDAO.getThongKeNCC(text,start, end);
-        return this.tkncc;
+    public ArrayList<ThongKeNhaPhatHanhDTO> FilterNPH(String text,Date start, Date end) {
+        this.tknph = ThongKeDAO.getThongKeNPH(text,start, end);
+        return this.tknph;
     }
 
     public HashMap<Integer, ArrayList<ThongKeTonKhoDTO>> getTonKho() {
@@ -70,12 +77,24 @@ public class ThongKeBUS {
     //     return thongkeDAO.getThongKeTheoThang(nam);
     // }
     
-    public ArrayList<ThongKeTungNgayTrongThangDTO> getThongKeTungNgayTrongThang(int thang, int nam){
-        return thongkeDAO.getThongKeTungNgayTrongThang(thang, nam);
+    public ArrayList<ThongKeNhapHangDTO> getAllNhapHang() {
+        this.tknh = ThongKeDAO.getThongKeNhapHang("", new Date(0), new Date(System.currentTimeMillis()));
+        return this.tknh;
+    }
+
+    public ArrayList<ThongKeNhapHangDTO> FilterNhapHang(String text,Date start, Date end) {
+        this.tknh = ThongKeDAO.getThongKeNhapHang(text,start, end);
+        return this.tknh;
     }
     
-    public ArrayList<ThongKeTungNgayTrongThangDTO> getThongKeTuNgayDenNgay(String start, String end){
-        return thongkeDAO.getThongKeTuNgayDenNgay(start, end);
+    public ArrayList<ThongKeBanHangDTO> getAllBanHang() {
+        this.tkbh = ThongKeDAO.getThongKeBanHang("", new Date(0), new Date(System.currentTimeMillis()));
+        return this.tkbh;
+    }
+
+    public ArrayList<ThongKeBanHangDTO> FilterBanHang(String text,Date start, Date end) {
+        this.tkbh = ThongKeDAO.getThongKeBanHang(text,start, end);
+        return this.tkbh;
     }
         
     public ArrayList<ThongKeTungNgayTrongThangDTO> getThongKe7NgayGanNhat(){

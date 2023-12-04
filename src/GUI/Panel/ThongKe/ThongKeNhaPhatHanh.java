@@ -56,7 +56,7 @@ public class ThongKeNhaPhatHanh extends JPanel implements ActionListener, KeyLis
 
     public ThongKeNhaPhatHanh(ThongKeBUS thongkebus) {
         this.thongkebus = thongkebus;
-        list = thongkebus.getAllNCC();
+        list = thongkebus.getAllNPH();
         initComponent();
         loadDataTable(list);
     }
@@ -161,7 +161,7 @@ public class ThongKeNhaPhatHanh extends JPanel implements ActionListener, KeyLis
             String input = tenkhachhang.getText() != null ? tenkhachhang.getText() : "";
             java.util.Date time_start = start_date.getDate() != null ? start_date.getDate() : new java.util.Date(0);
             java.util.Date time_end = end_date.getDate() != null ? end_date.getDate() : new java.util.Date(System.currentTimeMillis());
-            this.list = thongkebus.FilterNCC(input, new Date(time_start.getTime()), new Date(time_end.getTime()));
+            this.list = thongkebus.FilterNPH(input, new Date(time_start.getTime()), new Date(time_end.getTime()));
             loadDataTable(list);
         }
     }

@@ -103,7 +103,7 @@ public final class PhieuXuat extends JPanel implements ActionListener, KeyListen
             mainFunction.btn.get(ac).addActionListener(this);
         }
 
-        search = new IntegratedSearch(new String[]{"Tất cả", "Mã phiếu", "Khách hàng", "Nhân viên xuất"});
+        search = new IntegratedSearch(new String[]{"Tất cả", "Mã phiếu", "Khách hàng", "Nhân viên bán hàng"});
         search.cbxChoose.addItemListener(this);
         search.txtSearchForm.addKeyListener(this);
         search.btnReset.addActionListener(this);
@@ -120,7 +120,7 @@ public final class PhieuXuat extends JPanel implements ActionListener, KeyListen
         tablePhieuXuat = new JTable();
         scrollTablePhieuXuat = new JScrollPane();
         tblModel = new DefaultTableModel();
-        String[] header = new String[]{"STT", "Mã phiếu xuất", "Khách hàng", "Nhân viên xuất", "Thời gian", "Tổng tiền"};
+        String[] header = new String[]{"STT", "Mã đơn hàng", "Khách hàng", "Nhân viên bán hàng", "Thời gian", "Tổng tiền"};
         tblModel.setColumnIdentifiers(header);
         tablePhieuXuat.setModel(tblModel);
         tablePhieuXuat.setFocusable(false);
@@ -176,7 +176,7 @@ public final class PhieuXuat extends JPanel implements ActionListener, KeyListen
 
         // init
         cbxKhachHang = new SelectForm("Khách hàng", listKh);
-        cbxNhanVien = new SelectForm("Nhân viên xuất", listNv);
+        cbxNhanVien = new SelectForm("Nhân viên bán hàng", listNv);
         dateStart = new InputDate("Từ ngày");
         dateEnd = new InputDate("Đến ngày");
         moneyMin = new InputForm("Từ số tiền (VND)");
@@ -214,7 +214,7 @@ public final class PhieuXuat extends JPanel implements ActionListener, KeyListen
             if (getRow() < 0) {
                 JOptionPane.showMessageDialog(null, "Vui lòng chọn phiếu cần xem!");
             } else {
-                ChiTietPhieuDialog ctp = new ChiTietPhieuDialog(m, "Thông tin phiếu xuất", true, pxBUS.getSelect(getRow()));
+                ChiTietPhieuDialog ctp = new ChiTietPhieuDialog(m, "Thông tin đơn hàng", true, pxBUS.getSelect(getRow()));
             }
         } else if (source == mainFunction.btn.get("cancel")) {
             if (tablePhieuXuat.getSelectedRow() < 0) {

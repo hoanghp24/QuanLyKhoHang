@@ -113,7 +113,7 @@ public final class ThongKeTonKho extends JPanel implements ActionListener, KeyLi
         tblTonKho = new JTable();
         scrollTblTonKho = new JScrollPane();
         tblModel = new DefaultTableModel();
-        String[] header = new String[]{"STT", "Mã SP", "Tên sản phẩm", "Tồn đầu kỳ", "Nhập trong kỳ", "Xuất trong kỳ", "Tồn cuối kỳ"};
+        String[] header = new String[]{"STT", "Mã SP", "Tên sản phẩm", "Tồn đầu kỳ", "Nhập trong kỳ", "Bán trong kỳ", "Tồn cuối kỳ"};
         tblModel.setColumnIdentifiers(header);
         tblTonKho.setModel(tblModel);
         tblTonKho.setAutoCreateRowSorter(true);

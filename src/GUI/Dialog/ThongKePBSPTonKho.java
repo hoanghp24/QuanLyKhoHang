@@ -48,7 +48,7 @@ public final class ThongKePBSPTonKho extends JDialog{
         table = new JTable();
         scrollTable = new JScrollPane();
         tblModel = new DefaultTableModel();
-        String[] header = new String[]{"Mã phiên bản", "Ngôn ngữ", "Loại bìa", "Số trang", "Tồn đầu kỳ", "Nhập trong kỳ", "Xuất trong kỳ", "Tồn cuối kỳ"};
+        String[] header = new String[]{"Mã phiên bản", "Ngôn ngữ", "Loại bìa", "Số trang", "Tồn đầu kỳ", "Nhập trong kỳ", "Bán trong kỳ", "Tồn cuối kỳ"};
         tblModel.setColumnIdentifiers(header);
 
         table.setModel(tblModel);

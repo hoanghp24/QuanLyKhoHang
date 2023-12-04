@@ -65,14 +65,14 @@ public final class PhieuNhap extends JPanel implements ActionListener, KeyListen
     ArrayList<PhieuNhapDTO> listPhieuNhap;
 
     NhanVienBUS nvBUS = new NhanVienBUS();
-    PhieuNhapBUS pxBUS = new PhieuNhapBUS();
+    PhieuNhapBUS pnBUS = new PhieuNhapBUS();
     NhaPhatHanhBUS nhaPhatHanhBUS = new NhaPhatHanhBUS();
 
     public PhieuNhap(Main m, TaiKhoanDTO tk) {
         this.m = m;
         this.tk = tk;
         initComponent();
-        this.listPhieuNhap = pxBUS.getAll();
+        this.listPhieuNhap = pnBUS.getAll();
         loadDataTalbe(this.listPhieuNhap);
     }
 
@@ -121,7 +121,7 @@ public final class PhieuNhap extends JPanel implements ActionListener, KeyListen
         tablePhieuNhap = new JTable();
         scrollTablePhieuNhap = new JScrollPane();
         tblModel = new DefaultTableModel();
-        String[] header = new String[]{"STT", "Mã phiếu nhập", "Nhà phát hành", "Nhân viên nhập", "Thời gian", "Tổng tiền"};
+        String[] header = new String[]{"STT", "Mã đơn nhập", "Nhà phát hành", "Nhân viên nhập", "Thời gian", "Tổng tiền"};
         tblModel.setColumnIdentifiers(header);
         tablePhieuNhap.setModel(tblModel);
         tablePhieuNhap.setFocusable(false);
@@ -215,7 +215,7 @@ public final class PhieuNhap extends JPanel implements ActionListener, KeyListen
             if (getRow() < 0) {
                 JOptionPane.showMessageDialog(null, "Vui lòng chọn phiếu cần xem!");
             } else {
-                ChiTietPhieuDialog ctp = new ChiTietPhieuDialog(m, "Thông tin phiếu nhập", true, pxBUS.getSelect(getRow()));
+                ChiTietPhieuDialog ctp = new ChiTietPhieuDialog(m, "Thông tin phiếu nhập", true, pnBUS.getSelect(getRow()));
             }
         } else if (source == mainFunction.btn.get("cancel")) {
             if (tablePhieuNhap.getSelectedRow() < 0) {
@@ -223,10 +223,10 @@ public final class PhieuNhap extends JPanel implements ActionListener, KeyListen
             } else {
                 int n = JOptionPane.showConfirmDialog(null, "Bạn có chắc muốn xóa phiếu này?", "Xóa phiếu", JOptionPane.YES_NO_OPTION);
                 if (n == JOptionPane.YES_OPTION) {
-                    PhieuNhapDTO px = pxBUS.getSelect(tablePhieuNhap.getSelectedRow());
-                    pxBUS.cancel(px.getMaphieu());
-                    pxBUS.remove(tablePhieuNhap.getSelectedRow());
-                    loadDataTalbe(pxBUS.getAll());
+                    PhieuNhapDTO px = pnBUS.getSelect(tablePhieuNhap.getSelectedRow());
+                    pnBUS.cancel(px.getMaphieu());
+                    pnBUS.remove(tablePhieuNhap.getSelectedRow());
+                    loadDataTalbe(pnBUS.getAll());
                     Notification notification = new Notification(m, Notification.Type.SUCCESS, Notification.Location.TOP_CENTER, "Hủy phiếu thành công");
                     notification.showNotification();
                 }
@@ -270,7 +270,7 @@ public final class PhieuNhap extends JPanel implements ActionListener, KeyListen
             Date time_end = dateEnd.getDate() != null ? dateEnd.getDate() : new Date(System.currentTimeMillis());
             String min_price = moneyMin.getText();
             String max_price = moneyMax.getText();
-            this.listPhieuNhap = pxBUS.fillerPhieuNhap(type, input, manph, manv, time_start, time_end, min_price, max_price);
+            this.listPhieuNhap = pnBUS.fillerPhieuNhap(type, input, manph, manv, time_start, time_end, min_price, max_price);
             loadDataTalbe(listPhieuNhap);
         }
     }
@@ -284,7 +284,7 @@ public final class PhieuNhap extends JPanel implements ActionListener, KeyListen
         moneyMax.setText("");
         dateStart.getDateChooser().setCalendar(null);
         dateEnd.getDateChooser().setCalendar(null);
-        this.listPhieuNhap = pxBUS.getAll();
+        this.listPhieuNhap = pnBUS.getAll();
         loadDataTalbe(listPhieuNhap);
     }
 

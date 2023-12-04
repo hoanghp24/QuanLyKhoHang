@@ -1,4 +1,4 @@
-package GUI.Dialog;
+package GUI.Dialog.ThongKe;
 
 import BUS.ChiTietSanPhamBUS;
 import BUS.PhienBanSanPhamBUS;
@@ -16,9 +16,12 @@ import DTO.ChiTietSanPhamDTO;
 import DTO.PhienBanSanPhamDTO;
 import DTO.PhieuNhapDTO;
 import DTO.PhieuXuatDTO;
+import DTO.ThongKe.ThongKeBanHangDTO;
+import DTO.ThongKe.ThongKeNhapHangDTO;
 import GUI.Component.ButtonCustom;
 import GUI.Component.HeaderTitle;
 import GUI.Component.InputForm;
+import GUI.Panel.ThongKe.ThongKeKhachHang;
 import helper.Formater;
 import helper.writePDF;
 import java.awt.BorderLayout;
@@ -42,7 +45,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-public final class ChiTietPhieuDialog extends JDialog implements ActionListener {
+public final class ThongKeNhapXuatDialog extends JDialog implements ActionListener {
 
     HeaderTitle titlePage;
     JPanel pnmain, pnmain_top, pnmain_bottom, pnmain_bottom_right, pnmain_bottom_left, pnmain_btn;
@@ -51,8 +54,8 @@ public final class ChiTietPhieuDialog extends JDialog implements ActionListener 
     JTable table, tblIsbn;
     JScrollPane scrollTable, scrollTableIsbn;
 
-    PhieuNhapDTO phieunhap;
-    PhieuXuatDTO phieuxuat;
+    ThongKeNhapHangDTO phieunhap;
+    ThongKeBanHangDTO phieuxuat;
     PhienBanSanPhamBUS phienbanBus = new PhienBanSanPhamBUS();
     ChiTietSanPhamBUS ctspBus = new ChiTietSanPhamBUS();
     PhieuNhapBUS phieunhapBus;
@@ -64,24 +67,24 @@ public final class ChiTietPhieuDialog extends JDialog implements ActionListener 
 
     HashMap<Integer, ArrayList<ChiTietSanPhamDTO>> chitietsanpham = new HashMap<>();
 
-    public ChiTietPhieuDialog(JFrame owner, String title, boolean modal, PhieuNhapDTO phieunhapDTO) {
+    public ThongKeNhapXuatDialog(JFrame owner, String title, boolean modal, ThongKeNhapHangDTO phieunhapDTO) {
         super(owner, title, modal);
         this.phieunhap = phieunhapDTO;
         phieunhapBus = new PhieuNhapBUS();
-        chitietphieu = phieunhapBus.selectCTP(phieunhapDTO.getMaphieu());
-        chitietsanpham = ctspBus.getChiTietSanPhamFromMaPN(phieunhapDTO.getMaphieu());
+        chitietphieu = phieunhapBus.selectCTP(phieunhapDTO.getMaphieunhap());
+        chitietsanpham = ctspBus.getChiTietSanPhamFromMaPN(phieunhapDTO.getMaphieunhap());
         initComponentNhap(title);
         initPhieuNhap();
         loadDataTableChiTietPhieu(chitietphieu);
         this.setVisible(true);
     }
 
-    public ChiTietPhieuDialog(JFrame owner, String title, boolean modal, PhieuXuatDTO phieuxuatDTO) {
+    public ThongKeNhapXuatDialog(JFrame owner, String title, boolean modal, ThongKeBanHangDTO phieuxuatDTO) {
         super(owner, title, modal);
         this.phieuxuat = phieuxuatDTO;
         phieuxuatBus = new PhieuXuatBUS();
-        chitietphieu = phieuxuatBus.selectCTP(phieuxuatDTO.getMaphieu());
-        chitietsanpham = ctspBus.getChiTietSanPhamFromMaPX(phieuxuatDTO.getMaphieu());
+        chitietphieu = phieuxuatBus.selectCTP(phieuxuatDTO.getMaphieuxuat());
+        chitietsanpham = ctspBus.getChiTietSanPhamFromMaPX(phieuxuatDTO.getMaphieuxuat());
         initComponentXuat(title);
         initPhieuXuat();
         loadDataTableChiTietPhieu(chitietphieu);
@@ -89,18 +92,16 @@ public final class ChiTietPhieuDialog extends JDialog implements ActionListener 
     }
 
     public void initPhieuNhap() {
-        txtMaPhieu.setText("PN" + Integer.toString(this.phieunhap.getMaphieu()));
-        txtNhaPhatHanh.setText(NhaPhatHanhDAO.getInstance().selectById(phieunhap.getManhaphathanh() + "").getTennph());
-        txtNhanVien.setText(NhanVienDAO.getInstance().selectById(phieunhap.getManguoitao() + "").getHoten());
-        txtThoiGian.setText(Formater.FormatTime(phieunhap.getThoigiantao()));
+        txtMaPhieu.setText("PN" + Integer.toString(this.phieunhap.getMaphieunhap()));
+        txtNhanVien.setText(NhanVienDAO.getInstance().selectById(phieunhap.getNguoitao() + "").getHoten());
+        txtThoiGian.setText(phieunhap.getThoigian());
     }
 
     public void initPhieuXuat() {
-        txtMaPhieu.setText("PX" + Integer.toString(this.phieuxuat.getMaphieu()));
+        txtMaPhieu.setText("PX" + Integer.toString(this.phieuxuat.getMaphieuxuat()));
         txtNhaPhatHanh.setTitle("Khách hàng");
-        txtNhaPhatHanh.setText(KhachHangDAO.getInstance().selectById(phieuxuat.getMakh() + "").getHoten());
-        txtNhanVien.setText(NhanVienDAO.getInstance().selectById(phieuxuat.getManguoitao() + "").getHoten());
-        txtThoiGian.setText(Formater.FormatTime(phieuxuat.getThoigiantao()));
+        txtNhanVien.setText(NhanVienDAO.getInstance().selectById(phieuxuat.getNguoitao() + "").getHoten());
+        txtThoiGian.setText(phieuxuat.getThoigian());
     }
 
     public void loadDataTableChiTietPhieu(ArrayList<ChiTietPhieuDTO> ctPhieu) {
@@ -307,10 +308,10 @@ public final class ChiTietPhieuDialog extends JDialog implements ActionListener 
         if (source == btnPdf) {
             writePDF w = new writePDF();
             if (this.phieuxuat != null) {
-                w.writePX(phieuxuat.getMaphieu());
+                w.writePX(phieuxuat.getMaphieuxuat());
             }
             if (this.phieunhap != null) {
-                w.writePN(phieunhap.getMaphieu());
+                w.writePN(phieunhap.getMaphieunhap());
             }
         }
     }

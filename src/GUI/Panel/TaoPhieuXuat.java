@@ -224,7 +224,7 @@ public final class TaoPhieuXuat extends JPanel {
         JPanel panlePXGX = new JPanel(new GridLayout(1, 3));
         panlePXGX.setPreferredSize(new Dimension(100, 90));
         cbxPhienBan = new SelectForm("Phiên bản", arrPhienban);
-        txtGiaXuat = new InputForm("Giá xuất");
+        txtGiaXuat = new InputForm("Giá bán");
         txtSoluongTon = new InputForm("Số lượng tồn");
         txtSoluongTon.setEditable(false);
         txtSoLuongMua = new InputForm("Số lượng mua");
@@ -436,9 +436,9 @@ public final class TaoPhieuXuat extends JPanel {
         JPanel right_top, right_center, right_bottom, pn_tongtien;
         right_top = new JPanel(new GridLayout(2, 1, 0, 0));
         right_top.setPreferredSize(new Dimension(300, 180));
-        txtMaphieu = new InputForm("Mã phiếu xuất");
+        txtMaphieu = new InputForm("Mã đơn hàng");
         txtMaphieu.setEditable(false);
-        txtNhanVien = new InputForm("Nhân viên xuất");
+        txtNhanVien = new InputForm("Nhân viên bán hàng");
         txtNhanVien.setEditable(false);
         maphieu = PhieuXuatDAO.getInstance().getAutoIncrement();
         manv = tk.getManv();
@@ -518,7 +518,7 @@ public final class TaoPhieuXuat extends JPanel {
                 }
             }
         });
-        btnNhapHang = new ButtonCustom("Xuất hàng", "excel", 14);
+        btnNhapHang = new ButtonCustom("Tạo đơn hàng", "excel", 14);
         btnQuayLai = new ButtonCustom("Quay lại", "excel", 14);
         right_bottom.add(pn_tongtien);
         if (type.equals("create")) {
@@ -533,14 +533,14 @@ public final class TaoPhieuXuat extends JPanel {
             } else if (makh == -1) {
                 JOptionPane.showMessageDialog(null, "Vui lòng chọn khách hàng");
             } else {
-                int input = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn tạo phiếu xuất !", "Xác nhận tạo phiếu", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                int input = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn tạo đơn hàng !", "Xác nhận tạo phiếu", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
                 if (input == 0) {
                     long now = System.currentTimeMillis();
                     Timestamp currenTime = new Timestamp(now);
                     PhieuXuatDTO phieuXuat = new PhieuXuatDTO(makh, maphieu, tk.getManv(), currenTime, sum, 1);
                     phieuXuatBUS.insert(phieuXuat, chitietphieu);
                     chiTietSanPhamBUS.updateXuat(chitietsanpham);
-                    JOptionPane.showMessageDialog(null, "Xuất hàng thành công !");
+                    JOptionPane.showMessageDialog(null, "Đơn hàng tạo thành công !");
                     mainChinh.setPanel(new PhieuXuat(mainChinh, tk));
                 }
             }
@@ -689,6 +689,6 @@ public final class TaoPhieuXuat extends JPanel {
         this.cbxPhienBan.setArr(arr);
         this.txtGiaXuat.setText("");
         this.txtSoluongTon.setText("");
-        this.textAreaIsbn.setText("");
+        this.txtSoLuongMua.setText("");
     }
 }

@@ -6,6 +6,7 @@ package BUS;
 
 import DAO.NhanVienDAO;
 import DAO.TaiKhoanDAO;
+import DTO.KhachHangDTO;
 import DTO.NhanVienDTO;
 import GUI.Panel.NhanVien;
 import GUI.Dialog.NhanVienDialog;
@@ -86,6 +87,16 @@ public class NhanVienBUS implements ActionListener, DocumentListener {
     
     public String getNameById(int manv) {
         return nhanVienDAO.selectById(manv+"").getHoten();
+    }
+
+    public String getTenNhanVien(int manv) {
+        String name = "";
+        for (NhanVienDTO nhanvienDTO : listNv) {
+            if (nhanvienDTO.getManv() == manv) {
+                name = nhanvienDTO.getHoten();
+            }
+        }
+        return name;
     }
 
     public String[] getArrTenNhanVien() {
