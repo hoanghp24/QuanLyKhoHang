@@ -1,6 +1,5 @@
 <!-- author: hgbaodev -->
-# Đồ án môn Lập trình Java
- Đề tài: Quản lý kho bán sách
+# Quản lý kho bán sách
 
 ## Getting Started
 
